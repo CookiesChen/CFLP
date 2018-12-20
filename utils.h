@@ -5,8 +5,6 @@
 
 using namespace std;
 
-void getCFCount(string);
-
-void getFacility(string);
+void getInput();
 
 #endif

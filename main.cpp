@@ -10,90 +10,63 @@ using namespace std;
 struct facility{
     int capacity;
     int cost;
-    facility(){
-        capacity = 0;
-        cost = 0;
+    facility(int capacity, int cost){
+        this->capacity = capacity;
+        this->cost = cost;
     }
 };
 
 struct customer{
-    vector<int> demand;
+    int demand;
     vector<int> assignment_cost;
 };
 
 vector<facility> facilities;
+vector<customer> customers;
+
 int customerNum = 0;
 int facilityNum = 0;
 
 int main(){
-    ifstream fin;
-    fin.open("Instances/p1");
-    string s;
-    getline(fin,s);
-    getCFCount(s);
-    printf("Facility: %d, Customers: %d", facilityNum, customerNum);
-    for(int i=0; i < facilityNum; i++){
-        getline(fin,s);
-        getFacility(s);
-    }
-    string data = "";
-    while(getline(fin,s)) {
-        data += s; 
-    }
-    getCustomer(data);
+    getInput();
+   
     return 0;
 }
 
-// 获取客户数量和工厂数量
-void getCFCount(string s){
-    while(s[0] == ' '){
-        s = s.substr(1, s.length()-1);
+void getInput(){
+    ifstream fin;
+    fin.open("Instances/p58");
+    string s;
+    fin >> s;
+    facilityNum = atoi(s.c_str());
+    fin >> s;
+    customerNum = atoi(s.c_str());
+    for(int i = 0; i < facilityNum; i++){
+        fin >> s;
+        int capacity = atoi(s.c_str());
+        fin >> s;
+        int cost = atoi(s.c_str());
+        facilities.push_back(facility(capacity, cost));
     }
-    int flag = 0;
-    for(int i = 0; i < s.length(); i++ ){
-        if(s[i] == ' '){
-            flag = i;
-            string cstr = s.substr(0, i+1);
-            facilityNum = atoi(cstr.c_str());
+    for(int i = 0; i < customerNum; i++){
+        customers.push_back(customer());
+        fin >> s;
+        if(s[s.length()-1] == '.') s = s.substr(0, s.length()-1);
+        customers[i].demand = atoi(s.c_str());
+    }
+
+    for(int i = 0; i < customerNum; i++){
+        for(int j = 0; j < facilityNum; j++){
+            fin >> s;
+            if(s[s.length()-1] == '.') s = s.substr(0, s.length()-1);
+            customers[i].assignment_cost.push_back(atoi(s.c_str()));
         }
     }
-    s = s.substr(flag, s.length()-flag);
-    while(s[0] == ' '){
-        s = s.substr(1, s.length()-1);
-    }
-    for(int i = 0; i < s.length(); i++ ){
-        if(s[i] == '\n' || s[i] == ' ' || i == s.length()-1){
-            string cstr = s.substr(0, i+1);
-            customerNum = atoi(cstr.c_str());
+    for(int i = 0; i < customerNum; i++){
+        cout << customers[i].demand << endl;
+        for(int j = 0; j < facilityNum; j++){
+            cout << customers[i].assignment_cost[j] << " ";
         }
+        cout << endl;
     }
 }
-
-// 获取工厂
-void getFacility(string s){
-    facility myfacility;
-    while(s[0] == ' '){
-        s = s.substr(1, s.length()-1);
-    }
-    int flag = 0;
-    for(int i = 0; i < s.length(); i++ ){
-        if(s[i] == ' '){
-            flag = i;
-            string cstr = s.substr(0, i+1);
-            myfacility.capacity = atoi(cstr.c_str());
-        }
-    }
-    s = s.substr(flag, s.length()-flag);
-    while(s[0] == ' '){
-        s = s.substr(1, s.length()-1);
-    }
-    for(int i = 0; i < s.length(); i++ ){
-        if(s[i] == '\n' || s[i] == ' ' || i == s.length()-1){
-            string cstr = s.substr(0, i+1);
-            myfacility.cost = atoi(cstr.c_str());
-        }
-    }
-    facilities.push_back(myfacility);
-}
-
-void 
