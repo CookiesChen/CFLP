@@ -3,23 +3,13 @@
 #include <fstream>
 #include <vector>
 #include <stdio.h>
-#include "utils.h"
+#include <ctime>
+#include "type.h"
+#include "greed.h"
+#include "hill_climb.h"
+#include "SA.h"
 
 using namespace std;
-
-struct facility{
-    int capacity;
-    int cost;
-    facility(int capacity, int cost){
-        this->capacity = capacity;
-        this->cost = cost;
-    }
-};
-
-struct customer{
-    int demand;
-    vector<int> assignment_cost;
-};
 
 vector<facility> facilities;
 vector<customer> customers;
@@ -27,46 +17,61 @@ vector<customer> customers;
 int customerNum = 0;
 int facilityNum = 0;
 
+void getInput(string path);
+
 int main(){
-    getInput();
-   
+    srand((int)time(0));
+    string path = "Instances/p";
+    for(int i = 1; i <= 71; i++){
+        cout << "Test " << i << endl;
+        getInput(path + to_string(i));
+        /* 贪心算法 */
+        greed mygreed(facilities, customers, facilityNum, customerNum);
+        mygreed.exec(i);
+
+        // hillClimb myHillClimb(mygreed.getFacilities(), mygreed.getCustomers(), facilityNum, customerNum);
+        // myHillClimb.exec(i);
+
+        // sa sa(mygreed.getFacilities(), mygreed.getCustomers(), facilityNum, customerNum);
+        // sa.exec(i);
+    }
+
     return 0;
 }
 
-void getInput(){
+// 获取输入
+void getInput(string path){
     ifstream fin;
-    fin.open("Instances/p58");
-    string s;
+    fin.open(path);
+    float s;
     fin >> s;
-    facilityNum = atoi(s.c_str());
+    facilityNum = s;
     fin >> s;
-    customerNum = atoi(s.c_str());
+    customerNum = s;
+
+    customers.clear();
+    facilities.clear();
+
     for(int i = 0; i < facilityNum; i++){
         fin >> s;
-        int capacity = atoi(s.c_str());
+        int capacity = s;
         fin >> s;
-        int cost = atoi(s.c_str());
+        int cost = s;
         facilities.push_back(facility(capacity, cost));
-    }
-    for(int i = 0; i < customerNum; i++){
-        customers.push_back(customer());
-        fin >> s;
-        if(s[s.length()-1] == '.') s = s.substr(0, s.length()-1);
-        customers[i].demand = atoi(s.c_str());
     }
 
     for(int i = 0; i < customerNum; i++){
-        for(int j = 0; j < facilityNum; j++){
+        customers.push_back(customer());
+        fin >> s;
+        customers[i].demand = s;
+        customers[i].isassign = false;
+    }
+
+    for(int i = 0; i < facilityNum; i++){
+        for(int j = 0; j < customerNum; j++){
             fin >> s;
-            if(s[s.length()-1] == '.') s = s.substr(0, s.length()-1);
-            customers[i].assignment_cost.push_back(atoi(s.c_str()));
+            customers[j].assignment_cost.push_back(s);
         }
     }
-    for(int i = 0; i < customerNum; i++){
-        cout << customers[i].demand << endl;
-        for(int j = 0; j < facilityNum; j++){
-            cout << customers[i].assignment_cost[j] << " ";
-        }
-        cout << endl;
-    }
+
 }
